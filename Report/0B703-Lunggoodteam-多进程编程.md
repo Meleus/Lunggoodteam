@@ -108,6 +108,7 @@ Linux提供了几十种信号，分别代表着不同的意义。信号之间依
 
 #### 3)client2.c
 * 流程同client1.c。
+
 ![2_16](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_16.png)
 ![2_17](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_17.png)
 ![2_18](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_18.png)
