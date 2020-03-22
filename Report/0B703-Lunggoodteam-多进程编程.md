@@ -70,3 +70,291 @@ Linux提供了几十种信号，分别代表着不同的意义。信号之间依
 #### 2)运行结果
 ![2_6](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_6.png)
 
+## C、编写fork()多进程程序,进程间实现有名管道和无名管道通信。
+
+### 1、管道
+管道是Linux中进程间通信的一种常用方式，经常被用于命令行不同进程间通信，也可以在应用程序中建立进程间通信。管道分为无名管道和有名管道两种：无名管道可用于具有亲缘关系进程间的通信，如父子进程、兄弟进程。有名管道克服了管道没有名字的限制，允许无亲缘关系进程间的通信。管道是单向的字节流，它可以把一个进程的标准输出与另一个进程的标准输入连接起来，shell负责建立进程间的这些临时性的管道，而进程根本不知道这些重定向操作，仍然按照通常的方式进行操作。
+
+### 2、实现程序
+#### 1)server.c
+##### a)创建4个有名管道，分别用于服务器向两个客户端发信息和两个客户端向服务器发信息
+![2_7](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_7.png)
+
+##### b)服务器向两个客户端分别发送一组信息
+![2_8](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2.8.png)
+
+##### c)服务器接收两个客户端返回的信息
+![2_9](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2.9.png)
+
+##### d)服务器通过无名管道将返回的信息发送到子进程
+![2_10](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2.10.png)
+
+##### e)子进程输出返回的信息
+![2_11](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2.11.png)
+
+#### 2)client1.c
+##### a)从有名管道中读取数据
+![2_12](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2.12.png)
+
+##### b)利用有名管道向服务器端发送数据
+![2_13](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2.13.png)
+
+##### c)将从有名管道读取的数据发送到子进程
+![2_14](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2.14.png)
+
+##### d)子进程输出收到的数据
+![2_15](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2.15.png)
+
+#### 3)client2.c
+流程同client1.c:
+![2_16](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2.16.png)
+![2_17](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2.17.png)
+![2_18](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2.18.png)
+![2_19](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2.19.png)
+
+### 3、运行结果
+下面是三个进程各自的运行结果，可以看出：服务器端显示了两个客户端发回的数据，客户端也显示出了服务器端发送来的数据。
+![2_20](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2.20.png)
+![2_21](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2.21.png)
+![2_22](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2.22.png)
+
+# 四、附实验源码
+## server.c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<memory.h>
+#include<sys/types.h>
+#include<sys/stat.h>
+#include<fcntl.h>
+
+#define BUFFSIZE 100
+
+int main()
+{
+  int flag,fifo_fd1_s,fifo_fd2_s,fifo_fd1_c,fifo_fd2_c;
+  flag = mkfifo("./MyFIFO1_s", 0777);
+  if(flag<0){
+    perror("MyFIFO1 error");
+    exit(1);
+  }
+  fifo_fd1_s = open("./MyFIFO1_s", O_RDWR|O_NONBLOCK);
+  if(fifo_fd1_s<0){
+    perror("MyFIFO1 open error");
+    exit(1);
+  }
+  flag = mkfifo("./MyFIFO2_s", 0777);
+  if(flag<0){
+    perror("MyFIFO2 error");
+    exit(1);
+  }
+  fifo_fd2_s = open("./MyFIFO2_s", O_RDWR|O_NONBLOCK);
+  if(fifo_fd2_s<0){
+    perror("MyFIFO2 open error");
+    exit(1);
+  }
+  flag = mkfifo("./MyFIFO1_c", 0777);
+  if(flag<0){
+    perror("MyFIFO1 error");
+    exit(1);
+  }
+  fifo_fd1_c = open("./MyFIFO1_c", O_RDWR|O_NONBLOCK);
+  if(fifo_fd1_c<0){
+    perror("MyFIFO1 open error");
+    exit(1);
+  }
+  flag = mkfifo("./MyFIFO2_c", 0777);
+  if(flag<0){
+    perror("MyFIFO2 error");
+    exit(1);
+  }
+  fifo_fd2_c = open("./MyFIFO2_c", O_RDWR|O_NONBLOCK);
+  if(fifo_fd2_c<0){
+    perror("MyFIFO2 open error");
+    exit(1);
+  }
+  pid_t pid;
+  int pfd[2];
+  char buff1[BUFFSIZE],buff2[BUFFSIZE];
+  int rdnum,wtnum;
+  memset(buff1,0,sizeof(buff1));
+  memset(buff2,0,sizeof(buff2));
+  if(pipe(pfd)<0){
+    perror("pipe error");
+    exit(1);
+  }
+
+  pid=fork();
+  if(pid<0){
+    perror("fork error");
+    exit(1);
+  }
+  else if(pid==0){
+    close(pfd[1]);
+    sleep(1);
+    rdnum=read(pfd[0],buff1,BUFFSIZE);
+    printf("%s\n",buff1);
+    close(pfd[0]);
+    exit(0);
+  }
+  else{
+    close(pfd[0]);
+    flag = write(fifo_fd1_s, "server to client1\n",18);
+    if(flag<0){
+      perror("MyFIFO1 write error");
+      exit(1);
+    }
+    flag = write(fifo_fd2_s, "server to client2\n",18);
+    if(flag<0){
+      perror("MyFIFO1 write error");
+      exit(1);
+    }
+    int count=2;
+    while(1){
+      sleep(1);
+      flag = read(fifo_fd1_c, buff1,BUFFSIZE);
+      if(flag>0){
+        count--;
+        if(!count)break;
+      }
+      sleep(1);
+      flag = read(fifo_fd2_c, buff2,BUFFSIZE);
+      if(flag>0){
+        count--;
+        if(!count)break;
+      }
+    }
+    wtnum=write(pfd[1],"client1 return:",15);
+    wtnum=write(pfd[1],buff1,strlen(buff1));
+    wtnum=write(pfd[1],"client2 return:",15);
+    wtnum=write(pfd[1],buff2,strlen(buff2));
+
+    close(pfd[1]);
+    waitpid(pid,NULL,0);
+    exit(0);
+  }
+}
+
+## client1.c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<memory.h>
+#include<sys/types.h>
+#include<sys/stat.h>
+#include<fcntl.h>
+
+#define BUFFSIZE 100
+
+int main()
+{
+  int flag,fifo_fd1_s,fifo_fd1_c;
+  fifo_fd1_s = open("./MyFIFO1_s", O_RDWR|O_NONBLOCK);
+  fifo_fd1_c = open("./MyFIFO1_c", O_RDWR|O_NONBLOCK);
+
+  pid_t pid;
+  int pfd[2];
+  char buff[BUFFSIZE];
+  int rdnum,wtnum;
+  memset(buff,0,sizeof(buff));
+  if(pipe(pfd)<0){
+    perror("pipe error");
+    exit(1);
+  }
+
+  pid=fork();
+  if(pid<0){
+    perror("fork error");
+    exit(1);
+  }
+  else if(pid==0){
+    close(pfd[1]);
+    sleep(1);
+    rdnum=read(pfd[0],buff,BUFFSIZE);
+    printf("%s\n",buff);
+    close(pfd[0]);
+    exit(0);
+  }
+  else{
+    close(pfd[0]);
+    while(1){
+      sleep(1);
+      flag = read(fifo_fd1_s, buff,BUFFSIZE);
+      if(flag>0){
+        flag = write(fifo_fd1_c, "client1 to server\n",18);
+        if(flag<0){
+          perror("MyFIFO1 write error");
+          exit(1);
+        }
+        break;
+      }
+    }
+    wtnum=write(pfd[1],"server message:",15);
+    wtnum=write(pfd[1],buff,strlen(buff));
+    close(pfd[1]);
+    waitpid(pid,NULL,0);
+    exit(0);
+  }
+}
+
+## client2.c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<memory.h>
+#include<sys/types.h>
+#include<sys/stat.h>
+#include<fcntl.h>
+
+#define BUFFSIZE 100
+
+int main()
+{
+  int flag,fifo_fd2_s,fifo_fd2_c;
+  fifo_fd2_s = open("./MyFIFO2_s", O_RDWR|O_NONBLOCK);
+  fifo_fd2_c = open("./MyFIFO2_c", O_RDWR|O_NONBLOCK);
+
+  pid_t pid;
+  int pfd[2];
+  char buff[BUFFSIZE];
+  int rdnum,wtnum;
+  memset(buff,0,sizeof(buff));
+  if(pipe(pfd)<0){
+    perror("pipe error");
+    exit(1);
+  }
+
+  pid=fork();
+  if(pid<0){
+    perror("fork error");
+    exit(1);
+  }
+  else if(pid==0){
+    close(pfd[1]);
+    sleep(1);
+    rdnum=read(pfd[0],buff,BUFFSIZE);
+    printf("%s\n",buff);
+    close(pfd[0]);
+    exit(0);
+  }
+  else{
+    close(pfd[0]);
+    while(1){
+      sleep(1);
+      flag = read(fifo_fd2_s, buff,BUFFSIZE);
+      if(flag>0){
+        flag = write(fifo_fd2_c, "client2 to server\n",18);
+        if(flag<0){
+          perror("MyFIFO2 write error");
+          exit(1);
+        }
+        break;
+      }
+    }
+    wtnum=write(pfd[1],"server message:",15);
+    wtnum=write(pfd[1],buff,strlen(buff));
+    close(pfd[1]);
+    waitpid(pid,NULL,0);
+    exit(0);
+  }
+}
