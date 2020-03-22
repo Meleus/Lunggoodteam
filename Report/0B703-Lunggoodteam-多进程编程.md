@@ -77,36 +77,36 @@ Linux提供了几十种信号，分别代表着不同的意义。信号之间依
 
 ### 2、实现程序
 #### 1)server.c
-##### 1)创建4个有名管道，分别用于服务器向两个客户端发信息和两个客户端向服务器发信息
+##### a)创建4个有名管道，分别用于服务器向两个客户端发信息和两个客户端向服务器发信息
 ![2_7](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_7.png)
 
-##### 2)服务器向两个客户端分别发送一组信息
+##### b)服务器向两个客户端分别发送一组信息
 ![2_8](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_8.png)
 
-##### 3)服务器接收两个客户端返回的信息
+##### c)服务器接收两个客户端返回的信息
 ![2_9](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_9.png)
 
-##### 4)服务器通过无名管道将返回的信息发送到子进程
+##### d)服务器通过无名管道将返回的信息发送到子进程
 ![2_10](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_10.png)
 
-##### 5)子进程输出返回的信息
+##### e)子进程输出返回的信息
 ![2_11](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_11.png)
 
 #### 2)client1.c
-##### 1)从有名管道中读取数据
+##### a)从有名管道中读取数据
 ![2_12](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_12.png)
 
-##### 2)利用有名管道向服务器端发送数据
+##### b)利用有名管道向服务器端发送数据
 ![2_13](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_13.png)
 
-##### 3)将从有名管道读取的数据发送到子进程
+##### c)将从有名管道读取的数据发送到子进程
 ![2_14](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_14.png)
 
-##### 4)子进程输出收到的数据
+##### d)子进程输出收到的数据
 ![2_15](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_15.png)
 
 #### 3)client2.c
-* 流程同client1.c:
+* 流程同client1.c。
 ![2_16](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_16.png)
 ![2_17](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_17.png)
 ![2_18](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_18.png)
