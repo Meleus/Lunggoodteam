@@ -77,49 +77,50 @@ Linux提供了几十种信号，分别代表着不同的意义。信号之间依
 
 ### 2、实现程序
 #### 1)server.c
-##### a)创建4个有名管道，分别用于服务器向两个客户端发信息和两个客户端向服务器发信息
+##### 1)创建4个有名管道，分别用于服务器向两个客户端发信息和两个客户端向服务器发信息
 ![2_7](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_7.png)
 
-##### b)服务器向两个客户端分别发送一组信息
-![2_8](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2.8.png)
+##### 2)服务器向两个客户端分别发送一组信息
+![2_8](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_8.png)
 
-##### c)服务器接收两个客户端返回的信息
-![2_9](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2.9.png)
+##### 3)服务器接收两个客户端返回的信息
+![2_9](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_9.png)
 
-##### d)服务器通过无名管道将返回的信息发送到子进程
-![2_10](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2.10.png)
+##### 4)服务器通过无名管道将返回的信息发送到子进程
+![2_10](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_10.png)
 
-##### e)子进程输出返回的信息
-![2_11](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2.11.png)
+##### 5)子进程输出返回的信息
+![2_11](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_11.png)
 
 #### 2)client1.c
-##### a)从有名管道中读取数据
-![2_12](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2.12.png)
+##### 1)从有名管道中读取数据
+![2_12](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_12.png)
 
-##### b)利用有名管道向服务器端发送数据
-![2_13](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2.13.png)
+##### 2)利用有名管道向服务器端发送数据
+![2_13](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_13.png)
 
-##### c)将从有名管道读取的数据发送到子进程
-![2_14](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2.14.png)
+##### 3)将从有名管道读取的数据发送到子进程
+![2_14](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_14.png)
 
-##### d)子进程输出收到的数据
-![2_15](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2.15.png)
+##### 4)子进程输出收到的数据
+![2_15](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_15.png)
 
 #### 3)client2.c
 流程同client1.c:
-![2_16](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2.16.png)
-![2_17](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2.17.png)
-![2_18](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2.18.png)
-![2_19](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2.19.png)
+![2_16](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_16.png)
+![2_17](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_17.png)
+![2_18](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_18.png)
+![2_19](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_19.png)
 
 ### 3、运行结果
 下面是三个进程各自的运行结果，可以看出：服务器端显示了两个客户端发回的数据，客户端也显示出了服务器端发送来的数据。
-![2_20](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2.20.png)
-![2_21](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2.21.png)
-![2_22](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2.22.png)
+![2_20](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_20.png)
+![2_21](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_21.png)
+![2_22](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_22.png)
 
 # 四、附实验源码
 ## server.c
+```
 #include<stdio.h>
 #include<stdlib.h>
 #include<unistd.h>
@@ -234,8 +235,10 @@ int main()
     exit(0);
   }
 }
+```
 
 ## client1.c
+```
 #include<stdio.h>
 #include<stdlib.h>
 #include<unistd.h>
@@ -296,8 +299,10 @@ int main()
     exit(0);
   }
 }
+```
 
 ## client2.c
+```
 #include<stdio.h>
 #include<stdlib.h>
 #include<unistd.h>
@@ -358,3 +363,4 @@ int main()
     exit(0);
   }
 }
+```
