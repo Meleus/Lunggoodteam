@@ -106,14 +106,14 @@ Linux提供了几十种信号，分别代表着不同的意义。信号之间依
 ![2_15](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_15.png)
 
 #### 3)client2.c
-流程同client1.c:
+* 流程同client1.c:
 ![2_16](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_16.png)
 ![2_17](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_17.png)
 ![2_18](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_18.png)
 ![2_19](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_19.png)
 
 ### 3、运行结果
-下面是三个进程各自的运行结果，可以看出：服务器端显示了两个客户端发回的数据，客户端也显示出了服务器端发送来的数据。
+* 下面是三个进程各自的运行结果，可以看出：服务器端显示了两个客户端发回的数据，客户端也显示出了服务器端发送来的数据。
 ![2_20](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_20.png)
 ![2_21](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_21.png)
 ![2_22](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_22.png)
