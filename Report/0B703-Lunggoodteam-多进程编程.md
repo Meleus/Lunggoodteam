@@ -93,6 +93,7 @@ Linux提供了几十种信号，分别代表着不同的意义。信号之间依
 ![2_11](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_11.png)
 
 #### 2)client1.c
+
 ##### a)从有名管道中读取数据
 ![2_12](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_12.png)
 
