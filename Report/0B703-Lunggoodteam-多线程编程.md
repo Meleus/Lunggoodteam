@@ -45,7 +45,7 @@
 说明：
 这儿reader_reading有2个身份：当前在writing，则表示后面排队等的reader数目；当前在reading,则表示还没读完的reader数目。
 ```
-    sem_init(&sem1, 0, 1);
+    	sem_init(&sem1, 0, 1);
 	sem_init(&sem2, 0, 1);
 ```
 信号量sem1用来控制write，
