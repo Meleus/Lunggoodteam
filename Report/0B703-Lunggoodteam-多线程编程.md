@@ -32,7 +32,7 @@
 
 #### 1. 先考虑一种基本的输入：3个写&3个读同时进来（第一个是写）
 
-![3_a_1](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW3/3_a_1.png)
+![3_a_1](screencut/HW3/3_a_1.png)
 
 这种情况下的策略：
 
