@@ -32,7 +32,7 @@ int main()
 			sleep(3.5);
     	for(i = 0; i < 3; i++)  
     	{  
-        	pthread_create(&wid[i+3],NULL,reader,NULL);  
+        	pthread_create(&rid[i+3],NULL,reader,NULL);  
     	}  
 	break;
 	} 
