@@ -139,7 +139,7 @@ wid[2]------"write 77"
 ![3_b_2](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW3/3_b_2.png)
 
 #### 3. 实验结果  
-我们创建一个写者线程和一个读者线程，再创建剩余的两个写者线程和五个读者线程：  
+我们先创建一个写者线程和一个读者线程，再创建剩余的两个写者线程和五个读者线程：  
 ```
 int main(){
     int i=0;
