@@ -121,7 +121,7 @@ wid[2]------"write 77"
 	pthread_mutex_unlock(&writeLock);
 ```
 流程图如下所示：  
-
+![3_b_1](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW3/3_b_1.png)
 
 #### 2. 读者思路  
 读者开始时先用字符串表明读者开始执行，并查询readLock互斥变量，如果变量没被锁住就继续执行，否则等待：  
@@ -136,16 +136,90 @@ wid[2]------"write 77"
 	sleep(R_SLEEP);
 ```
 流程图如下所示：  
-
+![3_b_2](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW3/3_b_2.png)
 
 #### 3. 实验结果  
+我们创建一个写者线程和一个读者线程，再创建剩余的两个写者线程和五个读者线程：  
+```
+int main(){
+    int i=0;
+    pthread_create(&wid[0],NULL,writer,NULL);
+    pthread_create(&rid[0],NULL,reader,NULL);
+    for(i=1;i<Num_WRITER;i++){
+        pthread_create(&wid[i],NULL,writer,NULL);
+    }
+    for(i=1;i<Num_READER;i++){
+        pthread_create(&rid[i],NULL,reader,NULL);
+    }
+    sleep(30);
+    return 0;
+}
+```
+结果如下所示：  
+![3_b_3](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW3/3_b_3.png)
+可以看出，当读者和写者的线程都被创建后，优先执行了写者的操作。
+***
+# 四、实验总结
+* 掌握了基于pthread线程库的多线程编程技术。
+* 掌握了基本的线程间同步技术(sem,mutex)。
+* 理解了共享资源并掌握其操作方法。
+***
+# 五、实验源码
+```
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+#include <sys/syscall.h>
+#include <unistd.h>
 
+#define Num_WRITER 3
+#define Num_READER 6
+#define W_SLEEP 1
+#define R_SLEEP 3
 
+pthread_t wid[Num_WRITER],rid[Num_READER];
+pthread_mutex_t writeLock=PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t readLock=PTHREAD_MUTEX_INITIALIZER;
+int data=0;
+int readerNum=0,writerNum=0;
 
+void * writer(void* in){
+    printf("pthread id %ld:writer start\n",pthread_self());
+    pthread_mutex_lock(&writeLock);
+	pthread_mutex_lock(&readLock);
+    int rd=rand()%1024;
+    printf("pthread id %ld:write %d\n",pthread_self(),rd);
+    data=rd;
+    sleep(W_SLEEP);
+	pthread_mutex_unlock(&readLock);
+    pthread_mutex_unlock(&writeLock);
+    pthread_exit((void *) 0);
+}
 
+void * reader(void* in){
+    printf("pthread id %ld:reader start\n",pthread_self());
+    pthread_mutex_lock(&readLock);
+    pthread_mutex_unlock(&readLock);
+    printf("pthread id %ld:read %d\n",pthread_self(),data);
+    sleep(R_SLEEP);
+    pthread_exit((void *) 0);
+}
 
-
-
+int main(){
+    int i=0;
+    pthread_create(&wid[0],NULL,writer,NULL);
+    pthread_create(&rid[0],NULL,reader,NULL);
+    for(i=1;i<Num_WRITER;i++){
+        pthread_create(&wid[i],NULL,writer,NULL);
+    }
+    for(i=1;i<Num_READER;i++){
+        pthread_create(&rid[i],NULL,reader,NULL);
+    }
+    sleep(30);
+    return 0;
+}
+```
+***
 
 
 
