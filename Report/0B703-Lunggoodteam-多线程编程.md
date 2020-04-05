@@ -105,8 +105,11 @@ wid[2]------"write 77"
 ```
 因为同一时刻只能有一个写者，先定义一个互斥变量writeLock，当有写线程在执行时，先锁住该变量；同时，为了保证有写者访问数据集时，阻塞读者，我们又定义了一个互斥变量readLock，当有写者在执行操作时，锁住该变量：  
 ```
+	writerNum++;
+	if(writerNum==1){
+	    pthread_mutex_lock(&readLock);
+	}
 	pthread_mutex_lock(&writeLock);
-	pthread_mutex_lock(&readLock);
 ```
 然后随机生成一个数据，写入到变量中，并显示：  
 ```
@@ -117,8 +120,11 @@ wid[2]------"write 77"
 ```
 再释放两个互斥变量：  
 ```
-	pthread_mutex_unlock(&readLock);
 	pthread_mutex_unlock(&writeLock);
+	writerNum--;
+	if(writerNum==0){
+	    pthread_mutex_unlock(&readLock);
+	}
 ```
 流程图如下所示：  
 ![3_b_1](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW3/3_b_1.png)
@@ -151,7 +157,7 @@ int main(){
     for(i=1;i<Num_READER;i++){
         pthread_create(&rid[i],NULL,reader,NULL);
     }
-    sleep(30);
+    sleep(10);
     return 0;
 }
 ```
@@ -185,14 +191,20 @@ int readerNum=0,writerNum=0;
 
 void * writer(void* in){
     printf("pthread id %ld:writer start\n",pthread_self());
+    writerNum++;
+    if(writerNum==1){
+        pthread_mutex_lock(&readLock);
+    }
     pthread_mutex_lock(&writeLock);
-	pthread_mutex_lock(&readLock);
     int rd=rand()%1024;
     printf("pthread id %ld:write %d\n",pthread_self(),rd);
     data=rd;
     sleep(W_SLEEP);
-	pthread_mutex_unlock(&readLock);
     pthread_mutex_unlock(&writeLock);
+    writerNum--;
+    if(writerNum==0){
+        pthread_mutex_unlock(&readLock);
+    }
     pthread_exit((void *) 0);
 }
 
@@ -215,7 +227,7 @@ int main(){
     for(i=1;i<Num_READER;i++){
         pthread_create(&rid[i],NULL,reader,NULL);
     }
-    sleep(30);
+    sleep(10);
     return 0;
 }
 ```
