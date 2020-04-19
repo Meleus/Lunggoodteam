@@ -18,12 +18,12 @@
 # 三、实验过程和结果
 ## A、Host-Target 方案
 我们先尝试安装了qemu仿真环境及对应的树莓派系统，但因为不知道如何进行host和target端的通信，最后放弃了。
-然后我们在买好的树莓派上安装好了系统，并通过ssh进行了连接，效果如下：
+然后我们在买好的树莓派上安装好了系统，并通过ssh进行了连接，效果如下：  
 ![(1)](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW4/(1).png)
 
 ## B、构建并测试开发板交叉编译器
 ### 1、在host端安装交叉编译工具
-我们先从github上下载工具：
+我们先从github上下载工具：  
 ![(2)](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW4/(2).png)
 将其加入环境变量：
 ![(3)](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW4/(3).png)
