@@ -19,20 +19,20 @@
 ## A、Host-Target 方案
 我们先尝试安装了qemu仿真环境及对应的树莓派系统，但因为不知道如何进行host和target端的通信，最后放弃了。
 然后我们在买好的树莓派上安装好了系统，并通过ssh进行了连接，效果如下：  
-![(1)](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW4/(1).png)
+![(1)](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW4/%20(1).png)
 
 ## B、构建并测试开发板交叉编译器
 ### 1、在host端安装交叉编译工具
 我们先从github上下载工具：  
-![(2)](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW4/(2).png)  
+![(2)](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW4/%20(2).png)  
 将其加入环境变量：  
-![(3)](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW4/(3).png)  
+![(3)](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW4/%20(3).png)  
 查看是否安装成功：  
-![(4)](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW4/(4).png)  
+![(4)](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW4/%20(4).png)  
 
 ### 2、测试效果
 我们编写程序用c语言输出一个全局变量的值：  
-![(5)](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW4/(5).png)  
+![(5)](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW4/%20(5).png)  
 利用指令（arm-linux-gnueabihf-gcc main.c -o main -lm）对其进行交叉编译，可以看到生成了main.o文件  
 ![(6)](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW4/(6).png)  
 用FileZilla将其传到树莓派中，可以看到，其能正常运行：  
