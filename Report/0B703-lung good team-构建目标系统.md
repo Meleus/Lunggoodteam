@@ -23,7 +23,7 @@
 # 三、实验过程和结果
 ## A、用默认配置重新编译一遍已安装到开发板的内核，将新的内核替换现有内核，检查是否通过
 ### 1、先远程登录树莓派，记录下树莓派当前内核版本：
-![1](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/1.png)
+![1](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW5/1.png)
 
 ### 2、然后安装所需要的软件：
 1、下载安装git:    Sudo apt-get install git bc  
@@ -32,13 +32,13 @@
     export  PATH=$PATH:$HOME/rasppi/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian/bin
 
 ### 3、再根据树莓派的型号，选择默认的系统配置选项，效果如下：
-![2](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/2.png)
+![2](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW5/2.png)
 
 ### 4、再编译内核，并配置模块
 执行make -j4 zImage  modules  dtbs：
-![3](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/3.png)  
+![3](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW5/3.png)  
 执行sudo make modules_install：  
-![4](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/4.png)  
+![4](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW5/4.png)  
 再执行以下命令：  
 sudo cp arch/arm/boot/dts/*.dtb /boot/  
 sudo cp arch/arm/boot/dts/overlays/*.dtb* /boot/overlays/  
@@ -46,55 +46,55 @@ sudo cp arch/arm/boot/dts/overlays/REAOME /boot/overlays/
 sudo cp arch/arm/boot/zImage /boot/$KERNEL.img  
 
 ### 5、重启树莓派，查看效果  
-![5](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/5.png)
+![5](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW5/5.png)
 
 ## B、在原始版本基础上，重新配置Linux内核，构建一个嵌入式的Linux内核  
 ### 1、先远程登录树莓派，记录下启动文件boot的大小：  
-![6](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/6.png)  
+![6](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW5/6.png)  
 
 ### 2、开始重新配置内核：  
-![7](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/7.png)  
+![7](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW5/7.png)  
 
 ### 3、移出部分内核模块：  
 因为本机中没有无线电，也没有RF切换设备，先移出Amateur和RF switch这两个设备：  
-![8](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/8.png)  
+![8](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW5/8.png)  
 因为本机中不需要交换分区及openMPI快速进程通信或调试程序，去除Support for paging of anonymous memory (swap)和Enable process_vm_readv/writev syscalls：  
-![10](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/10.png)  
+![10](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW5/10.png)  
 去除Automatic process group scheduling、support initial ramdisks compressed using LZMA等管理内存盘压缩模式的模块：  
-![11](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/11.png)  
+![11](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW5/11.png)  
 启动设备没有2TB大，移出Support for large (2TB+) block devices and files模块：  
-![12](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/12.png)  
+![12](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW5/12.png)  
  取消对模拟电视信号及AM/FM无线电接收机信号的支持：  
-![14](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/14.png)  
+![14](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW5/14.png)  
  
 ### 4、添加部分内核模块：  
 增加对IDT ICS932S40系列时钟频率控制芯片的支持，增加Integrated Circuits ICS932S401：  
-![13](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/13.png)  
+![13](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW5/13.png)  
 增加Platform Support For Chrome Hardware模块及Hardware Spinlock Drivers模块：  
-![15](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/15.png)  
+![15](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW5/15.png)  
 保存配置：  
-![16](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/16.png)  
+![16](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW5/16.png)  
 
 ### 5、重新编译内核：  
-![17](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/17.png)  
-![18](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/18.png)  
+![17](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW5/17.png)  
+![18](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW5/18.png)  
 
 ### 6、查看效果：  
 查看启动文件boot大小：  
-![19](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/19.png)  
+![19](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW5/19.png)  
 比原来的小了40k左右的大小
  
 ## C、选择至少二个模块加载与卸载，检查是否加载、卸载成功  
 ### 1、查看总共有哪些模块：  
-![20](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/20.png)  
+![20](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW5/20.png)  
 ### 2、先尝试卸载hci_uart及bnep，但都被占用了：  
-![21](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/21.png)  
+![21](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW5/21.png)  
 ### 3、根据lsmod显示的结果，卸载未被占用的模块fixed：  
-![22](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/22.png)  
+![22](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW5/22.png)  
 查看结果，模块确实被卸载了：
-![23](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/23.png)  
+![23](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW5/23.png)  
 ### 4、再尝试先卸载i2c模块再重新加载：  
-![24](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/24.png)  
+![24](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW5/24.png)  
 
 ***
 # 四、实验总结
