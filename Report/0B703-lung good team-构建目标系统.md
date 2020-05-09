@@ -38,7 +38,7 @@
 执行make -j4 zImage  modules  dtbs：  
 ![3](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/3.png)  
 执行sudo make modules_install：  
-![4](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/4.png)
+![4](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/4.png)  
 再执行以下命令：  
 sudo cp arch/arm/boot/dts/*.dtb /boot/  
 sudo cp arch/arm/boot/dts/overlays/*.dtb* /boot/overlays/  
@@ -91,7 +91,7 @@ sudo cp arch/arm/boot/zImage /boot/$KERNEL.img
 ![19](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/21.png)  
 ### 3、根据lsmod显示的结果，卸载未被占用的模块fixed：  
 ![20](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/22.png)  
-查看结果，模块确实被卸载了：
+查看结果，模块确实被卸载了：  
 ![21](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/23.png)  
 ### 4、再尝试先卸载i2c模块再重新加载：  
 ![21](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/24.png)  
