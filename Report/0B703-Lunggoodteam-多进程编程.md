@@ -35,11 +35,11 @@ fork()调用执行一次会返回2个值(考虑错误信息实际为3个值),如
 #### 1)pid_t fork(void)
 `pid_t vfork(void)`
 
-![2_1](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_1.png)
+![2_1](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW2/2_1.png)
 #### 2)先编译并运行fork()函数
-![2_2](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_2.png)
+![2_2](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW2/2_2.png)
 #### 3)再编译并运行vfork()函数
-![2_3](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_3.png)
+![2_3](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW2/2_3.png)
 ### 3、总结
 * fork()用于创建一个新进程。由fork()创建的子进程是父进程的副本。即子进程获取父进程数据空间，堆和 栈的副本。父子进程之间不共享这些存储空间的部分。而vfork()创建的进程并不将父进程的地址空间完全复制到子进程中，因为子进程会立即调用exec (或exit)于是也就不会存放该地址空间。相反，在子进程调用exec或exit之前，它在父进程的空间进行。
 * vfork()与fork()另一个区别就是：vfork保证子进程先运行，在调用exec或exit之前与父进程数据是共享的,在它调用exec或exit之后父进程才可能被调度运行。
@@ -64,11 +64,11 @@ Linux提供了几十种信号，分别代表着不同的意义。信号之间依
 
 ### 4、编写相应处理程序
 #### 1)主程序
-![2_4](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_4.png)
+![2_4](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW2/2_4.png)
 
-![2_5](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2.5.png)
+![2_5](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW2/2.5.png)
 #### 2)运行结果
-![2_6](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_6.png)
+![2_6](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW2/2_6.png)
 
 ## C、编写fork()多进程程序,进程间实现有名管道和无名管道通信。
 
@@ -78,47 +78,47 @@ Linux提供了几十种信号，分别代表着不同的意义。信号之间依
 ### 2、实现程序
 #### 1)server.c
 ##### a)创建4个有名管道，分别用于服务器向两个客户端发信息和两个客户端向服务器发信息
-![2_7](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_7.png)
+![2_7](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW2/2_7.png)
 
 ##### b)服务器向两个客户端分别发送一组信息
-![2_8](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_8.png)
+![2_8](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW2/2_8.png)
 
 ##### c)服务器接收两个客户端返回的信息
-![2_9](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_9.png)
+![2_9](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW2/2_9.png)
 
 ##### d)服务器通过无名管道将返回的信息发送到子进程
-![2_10](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_10.png)
+![2_10](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW2/2_10.png)
 
 ##### e)子进程输出返回的信息
-![2_11](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_11.png)
+![2_11](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW2/2_11.png)
 
 #### 2)client1.c
 
 ##### a)从有名管道中读取数据
-![2_12](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_12.png)
+![2_12](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW2/2_12.png)
 
 ##### b)利用有名管道向服务器端发送数据
-![2_13](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_13.png)
+![2_13](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW2/2_13.png)
 
 ##### c)将从有名管道读取的数据发送到子进程
-![2_14](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_14.png)
+![2_14](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW2/2_14.png)
 
 ##### d)子进程输出收到的数据
-![2_15](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_15.png)
+![2_15](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW2/2_15.png)
 
 #### 3)client2.c
 * 流程同client1.c。
 
-![2_16](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_16.png)
-![2_17](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_17.png)
-![2_18](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_18.png)
-![2_19](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_19.png)
+![2_16](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW2/2_16.png)
+![2_17](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW2/2_17.png)
+![2_18](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW2/2_18.png)
+![2_19](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW2/2_19.png)
 
 ### 3、运行结果
 * 下面是三个进程各自的运行结果，可以看出：服务器端显示了两个客户端发回的数据，客户端也显示出了服务器端发送来的数据。
-![2_20](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_20.png)
-![2_21](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_21.png)
-![2_22](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW2/2_22.png)
+![2_20](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW2/2_20.png)
+![2_21](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW2/2_21.png)
+![2_22](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW2/2_22.png)
 
 # 四、附实验源码
 ## server.c
