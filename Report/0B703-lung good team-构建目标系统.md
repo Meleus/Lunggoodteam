@@ -21,7 +21,24 @@
 * 选择至少二个模块加载与卸载，检查是否加载、卸载成功
 ***
 # 三、实验过程和结果
-## A、
+## A、用默认配置重新编译一遍已安装到开发板的内核，将新的内核替换现有内核，检查是否通过
+### 1、先远程登录树莓派，记录下树莓派当前内核版本：
+![(1)](https://https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/1.png)
+
+### 2、然后安装所需要的软件：
+1、下载安装git:    Sudo apt-get install git bc
+2、下载linux内核： git clone git://github.com/raspberrypi/linux.git
+3、将编译器路径加入系统变量中：打开 .bashrc文件，例如加入，
+    export  PATH=$PATH:$HOME/rasppi/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian/bin
+
+### 3、再根据树莓派的型号，选择默认的系统配置选项，效果如下：
+![(2)](https://https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/2.png)
+
+### 4、再编译内核，并配置模块
+执行make -j4 zImage  modules  dtbs：
+![(3)](https://https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/3.png)
+执行sudo make modules_install：
+![(4)](https://https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/4.png)
 
 ## B、
 
