@@ -57,27 +57,27 @@ sudo cp arch/arm/boot/zImage /boot/$KERNEL.img
 
 ### 3、移出部分内核模块：  
 因为本机中没有无线电，也没有RF切换设备，先移出Amateur和RF switch这两个设备：  
-![7](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/8.png)  
+![8](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/8.png)  
 因为本机中不需要交换分区及openMPI快速进程通信或调试程序，去除Support for paging of anonymous memory (swap)和Enable process_vm_readv/writev syscalls：  
-![8](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/10.png)  
+![10](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/10.png)  
 去除Automatic process group scheduling、support initial ramdisks compressed using LZMA等管理内存盘压缩模式的模块：  
-![9](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/11.png)  
+![11](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/11.png)  
 启动设备没有2TB大，移出Support for large (2TB+) block devices and files模块：  
-![10](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/12.png)  
+![12](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/12.png)  
  取消对模拟电视信号及AM/FM无线电接收机信号的支持：  
- ![12](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/14.png)  
+![14](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/14.png)  
  
 ### 4、添加部分内核模块：  
 增加对IDT ICS932S40系列时钟频率控制芯片的支持，增加Integrated Circuits ICS932S401：  
-![11](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/13.png)  
+![13](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/13.png)  
 增加Platform Support For Chrome Hardware模块及Hardware Spinlock Drivers模块：  
-![13](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/15.png)  
+![15](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/15.png)  
 保存配置：  
-![14](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/16.png)  
+![16](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/16.png)  
 
 ### 5、重新编译内核：  
-![15](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/17.png)  
-![16](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/18.png)  
+![17](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/17.png)  
+![18](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/18.png)  
 
 ### 6、查看效果：  
 查看启动文件boot大小：  
@@ -86,15 +86,15 @@ sudo cp arch/arm/boot/zImage /boot/$KERNEL.img
  
 ## C、选择至少二个模块加载与卸载，检查是否加载、卸载成功  
 ### 1、查看总共有哪些模块：  
-![18](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/20.png)  
+![20](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/20.png)  
 ### 2、先尝试卸载hci_uart及bnep，但都被占用了：  
-![19](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/21.png)  
+![21](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/21.png)  
 ### 3、根据lsmod显示的结果，卸载未被占用的模块fixed：  
-![20](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/22.png)  
+![22](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/22.png)  
 查看结果，模块确实被卸载了：  
-![21](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/23.png)  
+![23](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/23.png)  
 ### 4、再尝试先卸载i2c模块再重新加载：  
-![21](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/24.png)  
+![24](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/HW5/24.png)  
 
 ***
 # 四、实验总结
