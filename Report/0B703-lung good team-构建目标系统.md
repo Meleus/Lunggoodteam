@@ -19,6 +19,7 @@
 * 保留必要的模块安装，剩余(占多数)取消；(M=>N)
 * make后将新的内核安装到开发板运行测试
 * 选择至少二个模块加载与卸载，检查是否加载、卸载成功
+* 构建并安装至少一款不同于根文件系统、用于应用开发的其它文件系统。
 ***
 # 三、实验过程和结果
 ## A、用默认配置重新编译一遍已安装到开发板的内核，将新的内核替换现有内核，检查是否通过
@@ -95,6 +96,38 @@ sudo cp arch/arm/boot/zImage /boot/$KERNEL.img
 ![23](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW5/23.png)  
 ### 4、再尝试先卸载i2c模块再重新加载：  
 ![24](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW5/24.png)  
+
+## D、构建并安装至少一款不同于根文件系统、用于应用开发的其它文件系统。
+### 1、在树莓派端安装nfs:  
+先运行sudo apt-get install nfs-kernel-server:  
+![25](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW5/25.png)  
+再运行sudo apt-get isntall portmap:  
+![26](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW5/26.png)  
+再建立用于共享文件的文件夹：
+![27](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW5/27.png)  
+根据建立的文件夹更改配置文件：
+![28](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW5/28.png)  
+其中各参数的意思分别为：  
+\*：允许所有的网段访问，也可以使用具体的IP  
+rw：挂接此目录的客户端对该共享目录具有读写权限  
+sync：资料同步写入内存和硬盘  
+no_root_squash：root用户具有对根目录的完全管理访问权限。
+最后，开启nfs服务：
+![29](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW5/29.png)  
+
+### 2、在Ubuntu端也安装nfs，并连接:
+安装nfs:  
+![30](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW5/30.png)  
+建立用于共享的文件夹：  
+![31](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW5/31.png)  
+将该文件夹挂载到服务器端的共享文件夹下：
+![32](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW5/32.png)  
+
+### 3、验证效果:
+在Ubuntu端新建文件lung.txt:  
+![33](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW5/33.png)  
+在树莓派端也查看到了该文件，表示安装成功:
+![34](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW5/34.png)  
 
 ***
 # 四、实验总结
