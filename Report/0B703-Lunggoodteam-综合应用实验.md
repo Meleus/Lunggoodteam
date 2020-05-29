@@ -68,7 +68,7 @@ gcc -o memtest memtest.c
 # 四、代码部分
 * memdev.c
 
-'''
+```
 #include <linux/module.h>
 #include <linux/types.h>
 #include <linux/fs.h>
@@ -279,11 +279,11 @@ MODULE_LICENSE("GPL");
 
 module_init(memdev_init);
 module_exit(memdev_exit);
-'''
+```
 
 * memdev.h
 
-'''
+```
 #ifndef _MEMDEV_H_
 #define _MEMDEV_H_
 
@@ -307,11 +307,11 @@ struct mem_dev
 };
 
 #endif /* _MEMDEV_H_ */
-'''
+```
 
 * Makefile
 
-'''
+```
 ifneq ($(KERNELRELEASE),)
 	obj-m:=memdev.o
 else
@@ -322,11 +322,11 @@ default:
 clean:
 	rm -rf *.o *.mod.c *.mod.o *.ko
 endif
-'''
+```
 
 * memtest.c
 
-'''
+```
 #include <stdio.h>
 
 int main()
@@ -363,4 +363,4 @@ int main()
 
 
 }
-'''
+```
