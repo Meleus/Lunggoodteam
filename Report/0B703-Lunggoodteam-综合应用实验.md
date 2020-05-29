@@ -48,7 +48,7 @@
 随意位置下，创建modemo.c、Makefile
 依次执行：`make`、`ls`、`insmod modemo.ko`、`lsmod`
 
-[mod_ep]: (https://github.com/Meleus/Lunggoodteam/blob/master/screencut/Final/mod_ep.png)
+![mod_ep](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/Final/mod_ep.png)
 
 这属于模块放在内核源码树外
 
@@ -65,11 +65,11 @@
 
 * 创建完成后make
 
-[scull_make]: (https://github.com/Meleus/Lunggoodteam/blob/master/screencut/Final/scull_make.png)
+![scull_make](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/Final/scull_make.png)
 
 * 依次执行`ls`、`insmod memdev.ko`、`cat /proc/devices`
 
-[devices]: (https://github.com/Meleus/Lunggoodteam/blob/master/screencut/Final/devices.png)
+![devices](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/Final/devices.png)
 
 可以看到memdev驱动程序被正确的插入到内核当中，主设备号为260，该设备号为memdev.h中定义的#define MEMDEV_MAJOR 260。
 
@@ -90,7 +90,7 @@
 
 * 结果
 
-[scull_result]: (https://github.com/Meleus/Lunggoodteam/blob/master/screencut/Final/scull_result.png)
+![scull_result](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/Final/scull_result.png)
 
 ***
 # 四、代码部分
