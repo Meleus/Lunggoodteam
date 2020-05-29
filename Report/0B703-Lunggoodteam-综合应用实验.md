@@ -36,7 +36,7 @@
 * 一般这儿不报错就说明你安装成功了，你也可以按照PPT68～69，用个简单的模块尝试
 随意位置下，创建modemo.c、Makefile
 依次执行：make、ls、insmod modemo.ko、lsmod
-[mod_ep.png]
+![mod_ep](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/Final/mod_ep.png)
 这属于模块放在内核源码树外
 我insmod出了问题，解决办法：https://blog.csdn.net/m0_38066161/article/details/81812816
 
@@ -49,9 +49,9 @@
 https://blog.csdn.net/qq_40421682/article/details/97261197
 上述代码已经改过了
 * 创建完成后make
-[scull_make.png]
+![scull_make](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/Final/scull_make.png)
 * 依次ls、insmod memdev.ko、cat /proc/devices
-[devices.png]
+![devices](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/Final/devices.png)
 可以看到memdev驱动程序被正确的插入到内核当中，主设备号为260，该设备号为memdev.h中定义的#define MEMDEV_MAJOR 260。
 
 ## C、测试驱动程序
@@ -64,7 +64,7 @@ ls -al memdev0
 gcc -o memtest memtest.c
 ./memtest
 * 结果
-[scull_result.png]
+![scull_result](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/Final/scull_result.png)
 # 四、代码部分
 * memdev.c
 
