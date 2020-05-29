@@ -48,7 +48,7 @@
 随意位置下，创建modemo.c、Makefile
 依次执行：`make`、`ls`、`insmod modemo.ko`、`lsmod`
 
-! [mod_ep](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/Final/mod_ep.png)
+[mod_ep]: (https://github.com/Meleus/Lunggoodteam/blob/master/screencut/Final/mod_ep.png)
 
 这属于模块放在内核源码树外
 
