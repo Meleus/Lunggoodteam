@@ -16,55 +16,83 @@
 ***
 # 二、实验内容
 * 将树莓派设为智能家居Linux服务器，可用来采集并维护环境数据，如PM2.5、温度、湿度、气味、电器状态数据等。在实际环境中数据来自相应的传感器，本次试验中用scull设备模拟。有条件的小组鼓励使用真实设备采集数据。
+
 * 要求创建2个以上的scull设备，设备驱动可选择从内核源码树外(Kbuild)编译安装，或加入到内核源码树内。驱动函数要求包括： open, release, read, write, llseek, ioctl。
+
 * 实验中的环境数据存储在特定文件系统中。该文件系统要求具备属性：在线写入、持久性、断电可靠性。
+
 * PC机、移动设备或另外一个树莓派用作远程客户端，随时请求获取环境数据，客户端和服务器之间采用Socket通信。
+
 * APP编译采用交叉编译，用gdb-gdbserver交叉调试APP。
 ***
 # 三、实验过程和结果
 ## A、构建和配置内核树
-* 首先查看自己的linux内核的版本，在终端中输入： uname -r
+* 首先查看自己的linux内核的版本，在终端中输入： `uname -r`
 * 选择同自己内核相应的linux-source版本安装。在终端中输入：
-　　sudo apt-get install linux-source-4.15.0
+　　`sudo apt-get install linux-source-4.15.0`
 * 下载完毕后在/usr/src/下解压linux-source-2.6.35.tar.bz2
-解压方法,在终端中输入: sudo -i 切换到根用户下,定位到/usr/src/目录下，终端输入：tar jxvf linux-source-4.15.0.tar.bz2
-* 开始配置内核，选择最快的原版的配置（默认）方式：在终端中输入：make oldconfig
-* 安装一些必要的组件sudo apt-get install libncurses5-dev libssl-dev
-* 然后编译模块，定位到源代码文件夹下，在终端中输入： make modules
+解压方法,在终端中输入: sudo -i 切换到根用户下,定位到/usr/src/目录下，终端输入：`tar jxvf linux-source-4.15.0.tar.bz2`
+
+* 开始配置内核，选择最快的原版的配置（默认）方式：在终端中输入：`make oldconfig`
+
+* 安装一些必要的组件`sudo apt-get install libncurses5-dev libssl-dev`
+
+* 然后编译模块，定位到源代码文件夹下，在终端中输入： `make modules`
+
 * make(这两步要保证/home有足够的空间，它不会一开始跟你说，跑了个把钟头再中断就哭了)
-* 完成之后，安装模块，在终端中输入：make modules_install
+
+* 完成之后，安装模块，在终端中输入：`make modules_install`
+
 * 一般这儿不报错就说明你安装成功了，你也可以按照PPT68～69，用个简单的模块尝试
+
 随意位置下，创建modemo.c、Makefile
-依次执行：make、ls、insmod modemo.ko、lsmod
+依次执行：`make`、`ls`、`insmod modemo.ko`、`lsmod`
+
 ![mod_ep](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/Final/mod_ep.png)
+
 这属于模块放在内核源码树外
-我insmod出了问题，解决办法：https://blog.csdn.net/m0_38066161/article/details/81812816
+
+我insmod出了问题，[解决办法](https://blog.csdn.net/m0_38066161/article/details/81812816)
 
 ## B、创建scull设备及相关设备驱动
 * 代码文件
 'memdev.c'
 'memdev.h'
 'Makefile'
-在3.3版本之后的内核编译中，头文件的名称有所改变
-https://blog.csdn.net/qq_40421682/article/details/97261197
+在3.3版本之后的内核编译中，头文件的名称有所[改变](https://blog.csdn.net/qq_40421682/article/details/97261197)
+
 上述代码已经改过了
+
 * 创建完成后make
+
 ![scull_make](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/Final/scull_make.png)
-* 依次ls、insmod memdev.ko、cat /proc/devices
+
+* 依次`ls`、`insmod memdev.ko`、`cat /proc/devices`
+
 ![devices](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/Final/devices.png)
+
 可以看到memdev驱动程序被正确的插入到内核当中，主设备号为260，该设备号为memdev.h中定义的#define MEMDEV_MAJOR 260。
 
 ## C、测试驱动程序
 * 首先在/dev/目录下创建与该驱动程序相对应的文件节点
-mknod memdev0 c 260 0
+
+`mknod memdev0 c 260 0`
+
 * 使用ls查看创建好的驱动程序节点文件
-ls -al memdev0
-* 编写'memtest.c'，来对驱动程序进行测试
+
+`ls -al memdev0`
+
+* 编写`memtest.c`，来对驱动程序进行测试
+
 * 编译并执行该程序
-gcc -o memtest memtest.c
-./memtest
+
+`gcc -o memtest memtest.c`、`./memtest`
+
 * 结果
+
 ![scull_result](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/Final/scull_result.png)
+
+***
 # 四、代码部分
 * memdev.c
 
