@@ -56,14 +56,14 @@
 
 ## B、创建scull设备及相关设备驱动
 * 代码文件
-'memdev.c'
-'memdev.h'
-'Makefile'
+
+`memdev.c`、`memdev.h`、`Makefile`如文末所示
+
 在3.3版本之后的内核编译中，头文件的名称有所[改变](https://blog.csdn.net/qq_40421682/article/details/97261197)
 
 上述代码已经改过了
 
-* 创建完成后make
+* 创建完成后`make`
 
 ![scull_make](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/Final/scull_make.png)
 
