@@ -63,6 +63,8 @@
 
 上述代码已经改过了
 
+`#define MEMDEV_NR_DEVS 2 /*设备数*/`
+
 * 创建完成后`make`
 
 ![scull_make](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/Final/scull_make.png)
@@ -302,7 +304,7 @@ static void memdev_exit(void)
   unregister_chrdev_region(MKDEV(mem_major, 0), 2); /*释放设备号*/
 }
 
-MODULE_AUTHOR("David Xie");
+MODULE_AUTHOR("Lunggoodteam");
 MODULE_LICENSE("GPL");
 
 module_init(memdev_init);
