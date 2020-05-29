@@ -30,7 +30,7 @@
 * 首先查看自己的linux内核的版本，在终端中输入： `uname -r`
 * 选择同自己内核相应的linux-source版本安装。在终端中输入：
 　　`sudo apt-get install linux-source-4.15.0`
-* 下载完毕后在/usr/src/下解压linux-source-2.6.35.tar.bz2
+* 下载完毕后在/usr/src/下解压linux-source-4.15.0.tar.bz2
 解压方法,在终端中输入: sudo -i 切换到根用户下,定位到/usr/src/目录下，终端输入：`tar jxvf linux-source-4.15.0.tar.bz2`
 
 * 开始配置内核，选择最快的原版的配置（默认）方式：在终端中输入：`make oldconfig`
@@ -48,7 +48,7 @@
 随意位置下，创建modemo.c、Makefile
 依次执行：`make`、`ls`、`insmod modemo.ko`、`lsmod`
 
-![mod_ep](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/Final/mod_ep.png)
+! [mod_ep](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/Final/mod_ep.png)
 
 这属于模块放在内核源码树外
 
@@ -65,11 +65,11 @@
 
 * 创建完成后make
 
-![scull_make](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/Final/scull_make.png)
+! [scull_make](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/Final/scull_make.png)
 
-* 依次`ls`、`insmod memdev.ko`、`cat /proc/devices`
+* 依次执行`ls`、`insmod memdev.ko`、`cat /proc/devices`
 
-![devices](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/Final/devices.png)
+! [devices](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/Final/devices.png)
 
 可以看到memdev驱动程序被正确的插入到内核当中，主设备号为260，该设备号为memdev.h中定义的#define MEMDEV_MAJOR 260。
 
@@ -90,7 +90,7 @@
 
 * 结果
 
-![scull_result](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/Final/scull_result.png)
+! [scull_result](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/Final/scull_result.png)
 
 ***
 # 四、代码部分
