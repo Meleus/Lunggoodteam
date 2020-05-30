@@ -113,6 +113,10 @@
 #include <linux/slab.h>
 #include "memdev.h"
 
+#define SCULL_CMD1 1
+#define SCULL_CMD2 2
+#define SCULL_CMD3 3
+
 static int mem_major = MEMDEV_MAJOR;
 
 module_param(mem_major, int, S_IRUGO);
@@ -233,7 +237,7 @@ static loff_t mem_llseek(struct file *filp, loff_t offset, int whence)
 }
 
 /*IO controll函数*/
-static int mem_ioctl(struct inode *inode, struct file *filp, unsigned int cmd, unsigned long arg);
+static int mem_ioctl(struct inode *inode, struct file *filp, unsigned int cmd, unsigned long arg)
 {
 	if (cmd == SCULL_CMD1) {
 		printk("running SCULL_CMD1 \n");
@@ -348,9 +352,7 @@ module_exit(memdev_exit);
 #define MEMDEV_SIZE 4096
 #endif
 
-#define SCULL_CMD1 1
-#define SCULL_CMD2 2
-#define SCULL_CMD3 3
+
 
 /*mem设备描述结构体*/
 struct mem_dev
