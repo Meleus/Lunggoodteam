@@ -57,9 +57,16 @@
 ## B、创建scull设备及相关设备驱动
 * 代码文件
 
-`memdev.c`、`memdev.h`、`Makefile`如文末所示
+`scull.c`、`scull.h`、`Makefile`如文末所示
 
 在3.3版本之后的内核编译中，头文件的名称有所[改变](https://blog.csdn.net/qq_40421682/article/details/97261197)
+
+函数名也有些许改动
+> copy_to_user()改为raw_copy_to_user();
+
+> copy_from_user()改为raw_copy_from_user();
+
+> init_MUTEX((&scull_device->sem);改为sema_init(&scull_device->sem, 1);
 
 上述代码已经改过了
 
@@ -67,28 +74,26 @@
 
 * 创建完成后`make`
 
-![scull_make](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/Final/scull_make.png)
-
 * 依次执行`ls`、`insmod memdev.ko`、`cat /proc/devices`
 
 ![devices](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/Final/devices.png)
 
-可以看到memdev驱动程序被正确的插入到内核当中，主设备号为260，该设备号为memdev.h中定义的#define MEMDEV_MAJOR 260。
+可以看到scull驱动程序被正确的插入到内核当中，主设备号为241
 
 ## C、测试驱动程序
 * 首先在/dev/目录下创建与该驱动程序相对应的文件节点
 
-`mknod memdev0 c 260 0`
+`mknod scull0 c 241 0`
 
 * 使用ls查看创建好的驱动程序节点文件
 
 `ls -al memdev0`
 
-* 编写`memtest.c`，来对驱动程序进行测试
+* 编写`test.c`，来对驱动程序进行测试
 
 * 编译并执行该程序
 
-`gcc -o memtest memtest.c`、`./memtest`
+`gcc -o test test.c`、`./test`
 
 * 结果
 
@@ -96,301 +101,328 @@
 
 ***
 # 四、代码部分
-* memdev.c
+* scull.c
 
 ```
-#include <linux/module.h>
-#include <linux/types.h>
-#include <linux/fs.h>
-#include <linux/errno.h>
-#include <linux/mm.h>
-#include <linux/sched.h>
 #include <linux/init.h>
-#include <linux/cdev.h>
-#include <asm/io.h>
-#include <asm/switch_to.h>
-#include <linux/uaccess.h>
+#include <linux/module.h>
+#include <linux/fs.h>
 #include <linux/slab.h>
-#include "memdev.h"
-
-static int mem_major = MEMDEV_MAJOR;
-
-module_param(mem_major, int, S_IRUGO);
-
-struct mem_dev *mem_devp; /*设备结构体指针*/
-
-struct cdev cdev;
-
-/*文件打开函数*/
-int mem_open(struct inode *inode, struct file *filp)
+#include <linux/errno.h>
+#include <linux/types.h>
+#include <linux/cdev.h>
+#include <asm/uaccess.h>
+#include "scull.h"
+#define SCULL_CMD1 1
+#define SCULL_CMD2 2
+#define SCULL_CMD3 3
+int scull_major = SCULL_MAJOR;
+int scull_minor = 0;
+ 
+module_param(scull_major, int, S_IRUGO);
+module_param(scull_minor, int, S_IRUGO);
+ 
+struct scull_dev *scull_device;
+ 
+int scull_trim(struct scull_dev *dev)
 {
-    struct mem_dev *dev;
-    
-    /*获取次设备号*/
-    int num = MINOR(inode->i_rdev);
-
-    if (num >= MEMDEV_NR_DEVS)
-            return -ENODEV;
-    dev = &mem_devp[num];
-    
-    /*将设备描述结构指针赋值给文件私有数据指针*/
+    if (dev)
+    {
+        if (dev->data)
+        {
+            kfree(dev->data);
+        }
+        dev->data = NULL;
+        dev->size = 0;
+    }
+    return 0;
+}
+ 
+int scull_open(struct inode *inode, struct file *filp)
+{
+    struct scull_dev *dev;
+ 
+    dev = container_of(inode->i_cdev, struct scull_dev, cdev);
     filp->private_data = dev;
-    
+ 
+    if ((filp->f_flags & O_ACCMODE) == O_WRONLY)
+    {
+        if (down_interruptible(&dev->sem))
+        {
+            return -ERESTARTSYS;
+        }
+        scull_trim(dev);
+        up(&dev->sem);
+    }
+ 
     return 0;
 }
-
-/*文件释放函数*/
-int mem_release(struct inode *inode, struct file *filp)
+ 
+int scull_release(struct inode *inode, struct file *filp)
 {
-  return 0;
-}
-
-/*读函数*/
-static ssize_t mem_read(struct file *filp, char __user *buf, size_t size, loff_t *ppos)
-{
-  unsigned long p = *ppos;
-  unsigned int count = size;
-  int ret = 0;
-  struct mem_dev *dev = filp->private_data; /*获得设备结构体指针*/
-
-  /*判断读位置是否有效*/
-  if (p >= MEMDEV_SIZE)
     return 0;
-  if (count > MEMDEV_SIZE - p)
-    count = MEMDEV_SIZE - p;
-
-  /*读数据到用户空间*/
-  if (copy_to_user(buf, (void*)(dev->data + p), count))
-  {
-    ret = - EFAULT;
-  }
-  else
-  {
-    *ppos += count;
-    ret = count;
-    
-    printk(KERN_INFO "read %d bytes(s) from %d\n", count, p);
-  }
-
-  return ret;
 }
-
-/*写函数*/
-static ssize_t mem_write(struct file *filp, const char __user *buf, size_t size, loff_t *ppos)
+ 
+ssize_t scull_read(struct file *filp, char __user *buf, size_t count, loff_t *f_pos)
 {
-  unsigned long p = *ppos;
-  unsigned int count = size;
-  int ret = 0;
-  struct mem_dev *dev = filp->private_data; /*获得设备结构体指针*/
-  
-  /*分析和获取有效的写长度*/
-  if (p >= MEMDEV_SIZE)
-    return 0;
-  if (count > MEMDEV_SIZE - p)
-    count = MEMDEV_SIZE - p;
-    
-  /*从用户空间写入数据*/
-  if (copy_from_user(dev->data + p, buf, count))
-    ret = - EFAULT;
-  else
-  {
-    *ppos += count;
-    ret = count;
-    
-    printk(KERN_INFO "written %d bytes(s) from %d\n", count, p);
-  }
-
-  return ret;
+    struct scull_dev *dev = filp->private_data;
+    ssize_t retval = 0;
+ 
+    if (down_interruptible(&dev->sem))
+    {
+        return -ERESTARTSYS;
+    }
+    if (*f_pos >= dev->size)
+    {
+        goto out;
+    }
+    if (*f_pos + count > dev->size)
+    {
+        count = dev->size - *f_pos;
+    }
+ 
+    if (!dev->data)
+    {
+        goto out;
+    }
+ 
+    if (raw_copy_to_user(buf, dev->data + *f_pos, count))
+    {
+        retval = -EFAULT;
+        goto out;
+    }
+ 
+    *f_pos += count;
+    retval = count;
+ 
+    out:
+        up(&dev->sem);
+        return retval;
 }
-
-/* seek文件定位函数 */
-static loff_t mem_llseek(struct file *filp, loff_t offset, int whence)
+ 
+ssize_t scull_write(struct file *filp, const char __user *buf, size_t count, loff_t *f_pos)
 {
+    struct scull_dev *dev = filp->private_data;
+    ssize_t retval = -ENOMEM;
+ 
+    if (down_interruptible(&dev->sem))   
+    {
+        return -ERESTARTSYS;
+    }
+ 
+    if (!dev->data)   
+    {
+        dev->data = kmalloc(SCULL_BUFFER_SIZE, GFP_KERNEL);
+        if (!dev->data)
+        {
+            goto out;
+        }
+        memset(dev->data, 0, SCULL_BUFFER_SIZE);
+     }
+ 
+    if (count > SCULL_BUFFER_SIZE - dev->size)
+    {
+        count = SCULL_BUFFER_SIZE - dev->size;
+    }
+ 
+    if (raw_copy_from_user(dev->data + dev->size, buf, count))
+    {
+        retval = -EFAULT;
+        goto out;
+    }
+     
+    dev->size += count;
+    retval = count;
+ 
+    out:
+        up(&dev->sem);
+        return retval;
+}
+ 
+loff_t scull_llseek(struct file *filp, loff_t off, int whence)
+{
+    struct scull_dev *dev = filp->private_data;
     loff_t newpos;
-
-    switch(whence) {
-      case 0: /* SEEK_SET */
-        newpos = offset;
-        break;
-
-      case 1: /* SEEK_CUR */
-        newpos = filp->f_pos + offset;
-        break;
-
-      case 2: /* SEEK_END */
-        newpos = MEMDEV_SIZE -1 + offset;
-        break;
-
-      default: /* can't happen */
+ 
+    switch(whence)
+    {
+        case 0:
+            newpos = off;
+            break;
+        case 1:
+            newpos = filp->f_pos + off;
+            break;
+        case 2:
+            newpos = dev->size + off;
+            break;
+        default:
+            return -EINVAL;
+    }
+    if (newpos < 0)
+    {
         return -EINVAL;
     }
-    if ((newpos<0) || (newpos>MEMDEV_SIZE))
-     return -EINVAL;
-     
     filp->f_pos = newpos;
     return newpos;
-
 }
 
-/*文件操作结构体*/
-static const struct file_operations mem_fops =
+int scull_ioctl(struct inode *inode, struct file *filp, unsigned int cmd, unsigned long arg)
 {
-  .owner = THIS_MODULE,
-  .llseek = mem_llseek,
-  .read = mem_read,
-  .write = mem_write,
-  .open = mem_open,
-  .release = mem_release,
+if (cmd == SCULL_CMD1) {
+printk("running SCULL_CMD1 \n");
+return 0;
+}
+if (cmd == SCULL_CMD2) {
+printk(" running SCULL_CMD2 \n");
+return 0;
+}
+if (cmd == SCULL_CMD3) {
+printk(" running SCULL_CMD3 \n");
+return 0;
+}
+printk("cmd error! \n");
+return -EFAULT;
+}
+ 
+struct file_operations scull_fops = {
+    .owner = THIS_MODULE,
+    .llseek = scull_llseek,
+    .read = scull_read,
+    .write = scull_write,
+    .open = scull_open,
+    .release = scull_release,   
 };
-
-/*设备驱动模块加载函数*/
-static int memdev_init(void)
+ 
+void  scull_cleanup_module(void)
 {
-  int result;
-  int i;
-
-  dev_t devno = MKDEV(mem_major, 0);
-
-  /* 静态申请设备号*/
-  if (mem_major)
-    result = register_chrdev_region(devno, 2, "memdev");
-  else /* 动态分配设备号 */
-  {
-    result = alloc_chrdev_region(&devno, 0, 2, "memdev");
-    mem_major = MAJOR(devno);
-  }
-  
-  if (result < 0)
-    return result;
-
-  /*初始化cdev结构*/
-  cdev_init(&cdev, &mem_fops);
-  cdev.owner = THIS_MODULE;
-  cdev.ops = &mem_fops;
-  
-  /* 注册字符设备 */
-  cdev_add(&cdev, MKDEV(mem_major, 0), MEMDEV_NR_DEVS);
-   
-  /* 为设备描述结构分配内存*/
-  mem_devp = kmalloc(MEMDEV_NR_DEVS * sizeof(struct mem_dev), GFP_KERNEL);
-  if (!mem_devp) /*申请失败*/
-  {
-    result = - ENOMEM;
-    goto fail_malloc;
-  }
-  memset(mem_devp, 0, sizeof(struct mem_dev));
-  
-  /*为设备分配内存*/
-  for (i=0; i < MEMDEV_NR_DEVS; i++)
-  {
-        mem_devp[i].size = MEMDEV_SIZE;
-        mem_devp[i].data = kmalloc(MEMDEV_SIZE, GFP_KERNEL);
-        memset(mem_devp[i].data, 0, MEMDEV_SIZE);
-  }
-    
-  return 0;
-
-  fail_malloc:
-  unregister_chrdev_region(devno, 1);
-  
-  return result;
+    dev_t devno = MKDEV(scull_major, scull_minor);
+ 
+    if (scull_device)
+    {
+        scull_trim(scull_device);
+        cdev_del(&scull_device->cdev);
+        kfree(scull_device);   
+    }
+    unregister_chrdev_region(devno, 1);
 }
-
-/*模块卸载函数*/
-static void memdev_exit(void)
+ 
+static void scull_setup_cdev(struct scull_dev *dev)
 {
-  cdev_del(&cdev); /*注销设备*/
-  kfree(mem_devp); /*释放设备结构体内存*/
-  unregister_chrdev_region(MKDEV(mem_major, 0), 2); /*释放设备号*/
+    int err, devno = MKDEV(scull_major, scull_minor);
+ 
+    cdev_init(&dev->cdev, &scull_fops);
+    dev->cdev.owner = THIS_MODULE;
+    dev->cdev.ops = &scull_fops;
+    err = cdev_add(&dev->cdev, devno, 1);
+ 
+    if (err)
+    {
+        printk(KERN_NOTICE "Error %d adding scull", err);
+    }
 }
-
-MODULE_AUTHOR("Lunggoodteam");
+ 
+static int __init scull_init_module(void)
+{
+    int result;
+    dev_t dev = 0;
+ 
+    if (scull_major)   
+    {
+        dev = MKDEV(scull_major, scull_minor);
+        result = register_chrdev_region(dev, 1, "scull");
+    }
+    else
+    {
+        result = alloc_chrdev_region(&dev, scull_minor, 1, "scull");
+        scull_major = MAJOR(dev);
+    }
+    if (result < 0)
+    {
+        printk(KERN_WARNING "scull: can't get major %d\n", scull_major);
+        return result;
+    }
+ 
+    scull_device = kmalloc(sizeof(struct scull_dev), GFP_KERNEL);       
+    if (!scull_device)
+    {
+        result = -ENOMEM;
+        goto fail;
+    }
+    memset(scull_device, 0, sizeof(struct scull_dev));
+ 
+    sema_init(&scull_device->sem, 1);
+ 
+    scull_setup_cdev(scull_device);
+ 
+    return 0;
+ 
+    fail:
+        scull_cleanup_module();
+        return result;
+}
+ 
+module_init(scull_init_module);
+module_exit(scull_cleanup_module);
+ 
 MODULE_LICENSE("GPL");
-
-module_init(memdev_init);
-module_exit(memdev_exit);
 ```
 
-* memdev.h
+* scull.h
 
 ```
-#ifndef _MEMDEV_H_
-#define _MEMDEV_H_
-
-#ifndef MEMDEV_MAJOR
-#define MEMDEV_MAJOR 260 /*预设的mem的主设备号*/
-#endif
-
-#ifndef MEMDEV_NR_DEVS
-#define MEMDEV_NR_DEVS 2 /*设备数*/
-#endif
-
-#ifndef MEMDEV_SIZE
-#define MEMDEV_SIZE 4096
-#endif
-
-/*mem设备描述结构体*/
-struct mem_dev
-{
-  char *data;
-  unsigned long size;
+#ifndef _SCULL_H
+#define _SCULL_H
+ 
+#define SCULL_MAJOR 0
+#define SCULL_BUFFER_SIZE PAGE_SIZE
+ 
+struct scull_dev {
+    char *data;
+    unsigned long size;
+    struct semaphore sem;
+    struct cdev cdev;
 };
-
-#endif /* _MEMDEV_H_ */
+ 
+#endif
 ```
 
 * Makefile
 
 ```
-ifneq ($(KERNELRELEASE),)
-	obj-m:=memdev.o
-else
-	KERNELDIR:=/lib/modules/$(shell uname -r)/build
-	PWD:=$(shell pwd)
-default:
-	$(MAKE) -C $(KERNELDIR) M=$(PWD) modules
+#sample driver module
+    obj-m := scull.o
+    KDIR = /root/linux-4.15.0/
+    PWD:=$(shell pwd)
+    INSTALLDIR=$(PWD)
+modules:
+	$(MAKE) -C /lib/modules/`uname -r`/build M=`pwd` modules
 clean:
-	rm -rf *.o *.mod.c *.mod.o *.ko
-endif
+	rm -f *.mod.c *.mod.o *.ko *.o *.tmp_versions
+.PHONY:
+	modules clean
 ```
 
-* memtest.c
+* test.c
 
 ```
-#include <stdio.h>
+#include<stdio.h>
+#include<fcntl.h>
+#include<stdlib.h>
 
-int main()
-{
-    FILE *fp0 = NULL;
-    char Buf[4096];   
+int main(){
+int fd, retval;
+char W_buffer[26];
+char R_buffer[26];
+fd=open("/dev/scull0", O_RDWR);
 
-    fp0 = fopen("/dev/memdev0", "r+");
-    if (fp0 == NULL)
-    {
-        printf("Open Memdev0 Error!\n");
-        return -1;
-    }
-    else
-    {
-    printf("打开Memdev0成功啦!\n");
-    }
-
-    strcpy(Buf, "Mem is char device!");
-    printf("写入内容BUF: %s \n", Buf);
-
-    fwrite(Buf, sizeof(Buf), 1, fp0);
-
-    fseek(fp0, 0, SEEK_SET);
-
-    strcpy(Buf, "Buf is NULL!");
-    printf("现在清空BUF: %s \n", Buf);
-
-    fread(Buf, sizeof(Buf), 1, fp0);
-
-    printf("读回内容BUF: %s \n", Buf);
-
-    return 0;
-
-
+retval = ioctl(fd, 1, 0);
+printf("io control %d\n", retval);
+retval = write(fd, W_buffer, 26);
+printf("write %d\n", retval);
+retval = lseek(fd, 0, 0);
+retval = read(fd, R_buffer, 26);
+printf("read %d\n", retval);
+close(fd);
+return 0;
 }
 ```
