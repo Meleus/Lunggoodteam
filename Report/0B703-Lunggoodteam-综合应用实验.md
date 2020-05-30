@@ -251,7 +251,7 @@ static int mem_ioctl(struct inode *inode, struct file *filp, unsigned int cmd, u
 		printk(" running SCULL_CMD3 \n");
 	return 0;
 	}
-	printk(“cmd error! \n");
+	printk("cmd error! \n");
 	return -EFAULT;
 }
 
