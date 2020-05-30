@@ -76,7 +76,7 @@
 
 * 依次执行`ls`、`insmod memdev.ko`、`cat /proc/devices`
 
-![devices](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/Final/2-1.png)
+![devices](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/Final/2-2.png)
 
 可以看到scull驱动程序被正确的插入到内核当中，主设备号为241
 
@@ -97,7 +97,7 @@
 
 * 结果
 
-![scull_result](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/Final/2-2.png)
+![scull_result](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/Final/2-1.png)
 
 ***
 # 四、代码部分
