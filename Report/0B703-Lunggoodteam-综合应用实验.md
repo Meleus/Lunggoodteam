@@ -232,6 +232,25 @@ static loff_t mem_llseek(struct file *filp, loff_t offset, int whence)
 
 }
 
+/*IO controll函数*/
+static int mem_ioctl(struct inode *inode, struct file *filp, unsigned int cmd, unsigned long arg);
+{
+	if (cmd == SCULL_CMD1) {
+		printk("running SCULL_CMD1 \n");
+	return 0;
+	}
+	if (cmd == SCULL_CMD2) {
+		printk(" running SCULL_CMD2 \n");
+	return 0;
+	}
+	if (cmd == SCULL_CMD3) {
+		printk(" running SCULL_CMD3 \n");
+	return 0;
+	}
+	printk(“cmd error! \n");
+	return -EFAULT;
+}
+
 /*文件操作结构体*/
 static const struct file_operations mem_fops =
 {
@@ -328,6 +347,10 @@ module_exit(memdev_exit);
 #ifndef MEMDEV_SIZE
 #define MEMDEV_SIZE 4096
 #endif
+
+#define SCULL_CMD1 1
+#define SCULL_CMD2 2
+#define SCULL_CMD3 3
 
 /*mem设备描述结构体*/
 struct mem_dev
