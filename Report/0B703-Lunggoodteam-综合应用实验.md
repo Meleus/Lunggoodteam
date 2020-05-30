@@ -57,9 +57,16 @@
 ## B、创建scull设备及相关设备驱动
 * 代码文件
 
-`memdev.c`、`memdev.h`、`Makefile`如文末所示
+`scull.c`、`scull.h`、`Makefile`如文末所示
 
 在3.3版本之后的内核编译中，头文件的名称有所[改变](https://blog.csdn.net/qq_40421682/article/details/97261197)
+
+函数名也有些许改动
+> copy_to_user()改为raw_copy_to_user();
+
+> copy_from_user()改为raw_copy_from_user();
+
+> init_MUTEX((&scull_device->sem);改为sema_init(&scull_device->sem, 1);
 
 上述代码已经改过了
 
@@ -67,28 +74,26 @@
 
 * 创建完成后`make`
 
-![scull_make](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/Final/scull_make.png)
-
 * 依次执行`ls`、`insmod memdev.ko`、`cat /proc/devices`
 
 ![devices](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/Final/devices.png)
 
-可以看到memdev驱动程序被正确的插入到内核当中，主设备号为260，该设备号为memdev.h中定义的#define MEMDEV_MAJOR 260。
+可以看到scull驱动程序被正确的插入到内核当中，主设备号为241
 
 ## C、测试驱动程序
 * 首先在/dev/目录下创建与该驱动程序相对应的文件节点
 
-`mknod memdev0 c 260 0`
+`mknod scull0 c 241 0`
 
 * 使用ls查看创建好的驱动程序节点文件
 
 `ls -al memdev0`
 
-* 编写`memtest.c`，来对驱动程序进行测试
+* 编写`test.c`，来对驱动程序进行测试
 
 * 编译并执行该程序
 
-`gcc -o memtest memtest.c`、`./memtest`
+`gcc -o test test.c`、`./test`
 
 * 结果
 
