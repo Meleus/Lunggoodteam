@@ -39,7 +39,7 @@
 
 * 然后编译模块，定位到源代码文件夹下，在终端中输入： `make modules`
 
-* make(这两步要保证/home有足够的空间，它不会一开始跟你说，跑了个把钟头再中断就哭了)
+* `make`(这两步要保证/home有足够的空间，它不会一开始跟你说，跑了个把钟头再中断就哭了)
 
 * 完成之后，安装模块，在终端中输入：`make modules_install`
 
@@ -70,11 +70,9 @@
 
 上述代码已经改过了
 
-`#define MEMDEV_NR_DEVS 2 /*设备数*/`
-
 * 创建完成后`make`
 
-* 依次执行`ls`、`insmod memdev.ko`、`cat /proc/devices`
+* 依次执行`ls`、`insmod scull.ko`、`cat /proc/devices`
 
 ![devices](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/Final/2-2.png)
 
