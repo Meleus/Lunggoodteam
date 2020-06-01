@@ -85,7 +85,7 @@
 
 * 使用ls查看创建好的驱动程序节点文件
 
-`ls -al memdev0`
+`ls -al scull0`
 
 * 编写`test.c`，来对驱动程序进行测试
 
