@@ -3,99 +3,112 @@
 ### 小组成员：杭锦泉 滕飞 朱君楷
 ***
 # 一、实验目的
-## 能够综合应用课程所学的技术与工具，包括：
-* Socket通信
+* 综合应用之前所学的各种linux功能
 
-* 多进程、多线程编程
-
-* 交叉调试目标端程序
-
-* 磁盘分区与文件系统创建
-
-* 模块与驱动编程
 ***
 # 二、实验内容
-* 将树莓派设为智能家居Linux服务器，可用来采集并维护环境数据，如PM2.5、温度、湿度、气味、电器状态数据等。在实际环境中数据来自相应的传感器，本次试验中用scull设备模拟。有条件的小组鼓励使用真实设备采集数据。
-
-* 要求创建2个以上的scull设备，设备驱动可选择从内核源码树外(Kbuild)编译安装，或加入到内核源码树内。驱动函数要求包括： open, release, read, write, llseek, ioctl。
-
-* 实验中的环境数据存储在特定文件系统中。该文件系统要求具备属性：在线写入、持久性、断电可靠性。
-
-* PC机、移动设备或另外一个树莓派用作远程客户端，随时请求获取环境数据，客户端和服务器之间采用Socket通信。
-
-* APP编译采用交叉编译，用gdb-gdbserver交叉调试APP。
+* 1.将树莓派设为智能家居Linux服务器，可用来采集并维护环境数据，如PM2.5、温度、湿度、气味、电器状态数据等。在实际环境中数据来自相应的传感器，本次试验中用scull设备模拟。有条件的小组鼓励使用真实设备采集数据。
+* 2.要求创建2个以上的scull设备，设备驱动可选择从内核源码树外(Kbuild)编译安装，或加入到内核源码树内。驱动函数要求包括： open, release, read, write, llseek, ioctl。
+* 3.实验中的环境数据存储在特定文件系统中。该文件系统要求具备属性：在线写入、持久性、断电可靠性。
+* 4.PC机、移动设备或另外一个树莓派用作远程客户端，随时请求获取环境数据，客户端和服务器之间采用Socket通信。
+* 5.APP编译采用交叉编译，用gdb-gdbserver交叉调试APP。
 ***
 # 三、实验过程和结果
-## A、构建和配置内核树
-* 首先查看自己的linux内核的版本，在终端中输入： `uname -r`
-* 选择同自己内核相应的linux-source版本安装。在终端中输入：
-　　`sudo apt-get install linux-source-4.15.0`
-* 下载完毕后在/usr/src/下解压linux-source-4.15.0.tar.bz2
-解压方法,在终端中输入: sudo -i 切换到根用户下,定位到/usr/src/目录下，终端输入：`tar jxvf linux-source-4.15.0.tar.bz2`
+## A、创建scull设备及相关设备驱动 
+### 1、编写scull设备的代码文件：
+编写scull.c、scull.h、Makefile及build文件如文末所示，实现了open, release, read, write, llseek, ioctl这些功能。
 
-* 开始配置内核，选择最快的原版的配置（默认）方式：在终端中输入：`make oldconfig`
+### 2、创建完成之后，编译代码 
+执行make指令，效果如下：  
+![1](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW6/%20(1).png) 
 
-* 安装一些必要的组件`sudo apt-get install libncurses5-dev libssl-dev`
+### 3、再将该设备安装到内核源码树外
+执行insmod scull.ko指令： 
+![2](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW6/%20(2).png)
+再执行cat /proc/devices： 
+![3](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW6/%20(3).png)
+可以看到scull驱动程序被正确的插入到内核当中，主设备号为240
 
-* 然后编译模块，定位到源代码文件夹下，在终端中输入： `make modules`
+### 4、测试驱动程序 
+首先执行mknod scull0 c 240 0指令，在/dev/目录下创建与该驱动程序相对应的文件节点
+![4](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW6/%20(4).png)  
+再执行ls -al scull0，使用ls查看创建好的驱动程序节点文件：  
+![5](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW6/%20(5).png)  
+编写test.c文件如文末所示，来对驱动程序进行测试，然后编译并执行该程序，效果如下：  
+![6](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW6/%20(6).png)  
 
-* `make`(这两步要保证/home有足够的空间，它不会一开始跟你说，跑了个把钟头再中断就哭了)
+## B、建立文件系统  
+### 1、将SD卡插入读卡器后，插入到电脑上，打开虚拟机，用GParted软件调节大小： 
+![7](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW6/%20(7).png)  
+![8](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW6/%20(8).png)  
 
-* 完成之后，安装模块，在终端中输入：`make modules_install`
+### 2、把SD卡插回树莓派，在树莓派中查看已有的分区的大小和位置：  
+![9](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW6/%20(9).png)  
 
-* 一般这儿不报错就说明你安装成功了，你也可以按照PPT68～69，用个简单的模块尝试
+### 3、利用刚刚空出来的空间建立新的分区：  
+执行sudo fdisk指令，建立新的分区：  
+![10](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW6/%20(10).png)    
+![11](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW6/%20(11).png)  
+执行完毕后查看新建立的分区： 
+![12](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW6/%20(12).png)  
 
-随意位置下，创建modemo.c、Makefile
-依次执行：`make`、`ls`、`insmod modemo.ko`、`lsmod`
+### 4、格式化新分区并挂载：
+将新分区格式化为ext3格式： 
+![13](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW6/%20(13).png)  
+再用sudo mount -t ext3 /dev/mmcblk0p3 /mnt/ext3fs 指令将新分区挂载到操作系统中： 
+![14](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW6/%20(14).png)  
+ 
+## C、建立虚拟机和树莓派之间的socket连接：  
+### 1、编写客户端和服务器端的测试程序client.c和server.c如文末所示，分别放到虚拟机和树莓派上后，进行编译：  
+![15](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW6/%20(15).png)  
+![16](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW6/%20(16).png)  
+### 2、先执行服务器端的程序，再执行客户端程序，实现两个设备之间的socket通信：  
+![17](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW6/%20(17).png)  
+![18](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW6/%20(18).png)  
 
-![mod_ep](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/Final/mod_ep.png)
+## D、综合上述功能，实现一个完整的项目。 
+### 1、先在ext3文件系统下创建两个scull设备:  
+执行如下指令:  
+![19](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW6/%20(19).png)  
 
-这属于模块放在内核源码树外
+### 2、向两个scull设备中写入一些随机数: 
+写入的数字如下所示：  
+![20](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW6/%20(20).png)  
 
-我insmod出了问题，[解决办法](https://blog.csdn.net/m0_38066161/article/details/81812816)
+### 3、实现一个完整的项目: 
+编写main.c文件如文末所示。主要实现的功能为：从两个scull设备中分别读取数据，做好设备的序号的标记后，再通过socket通信发送到虚拟机上，虚拟机显示收到的数据，并返回给树莓派，树莓派再显示收到的消息。不断执行，直到数据被读取完。 
+最终虚拟机端显示的效果为：  
+![21](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW6/%20(21).png)  
+树莓派端显示的效果为： 
+![22](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW6/%20(22).png)  
 
-## B、创建scull设备及相关设备驱动
-* 代码文件
+## D、用gdb-gdbserver交叉调试APP：
+### 1、在虚拟机上编译main.c文件: 
+![23](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW6/(23).png)  
 
-`scull.c`、`scull.h`、`Makefile`如文末所示
+### 2、将编译得到的main_g文件拷贝到树莓派上，并启动调试: 
+![24](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW6/(24).png)  
 
-在3.3版本之后的内核编译中，头文件的名称有所[改变](https://blog.csdn.net/qq_40421682/article/details/97261197)
+### 3、在虚拟机上也启动调试，并连接到树莓派:  
+![25](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW6/(25).png)  
 
-函数名也有些许改动
-> copy_to_user()改为raw_copy_to_user();
+### 4、此时，树莓派中断也显示在的debugging了： 
+![26](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW6/(26).png)  
 
-> copy_from_user()改为raw_copy_from_user();
+### 5、再在host端进行远程调试，尝试各种操作： 
+![27](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW6/(27).png)  
 
-> init_MUTEX((&scull_device->sem);改为sema_init(&scull_device->sem, 1);
+### 6、可以看到，树莓派端也有对应的输出： 
+![28](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW6/(28).png)  
+一直运行到最后，程序运行结束，host端提示运行完毕，target端也输出了全部的内容。
 
-上述代码已经改过了
-
-* 创建完成后`make`
-
-* 依次执行`ls`、`insmod scull.ko`、`cat /proc/devices`
-
-![devices](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/Final/2-2.png)
-
-可以看到scull驱动程序被正确的插入到内核当中，主设备号为241
-
-## C、测试驱动程序
-* 首先在/dev/目录下创建与该驱动程序相对应的文件节点
-
-`mknod scull0 c 241 0`
-
-* 使用ls查看创建好的驱动程序节点文件
-
-`ls -al scull0`
-
-* 编写`test.c`，来对驱动程序进行测试
-
-* 编译并执行该程序
-
-`gcc -o test test.c`、`./test`
-
-* 结果
-
-![scull_result](https://github.com/Meleus/Lunggoodteam/blob/master/screencut/Final/2-1.png)
+***
+# 四、实验总结
+* 学习了scull设备的创建与使用，了解了模块与驱动编程
+* 再次学习了磁盘分区与文件系统的创建
+* 学会了socket通信的使用
+* 再次练习了交叉调试目标端程序
+* 练习了多进程、多线程编程
 
 ***
 # 四、代码部分
@@ -422,5 +435,185 @@ retval = read(fd, R_buffer, 26);
 printf("read %d\n", retval);
 close(fd);
 return 0;
+}
+```
+
+client.c
+
+```
+#include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <string.h>
+#include <netdb.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+
+int main(int argc,char *argv[])
+{
+    int sockfd,numbytes;
+    char buf[BUFSIZ];
+    struct sockaddr_in their_addr;
+    printf("break!");
+    while((sockfd = socket(AF_INET,SOCK_STREAM,0)) == -1);
+    printf("We get the sockfd~\n");
+    their_addr.sin_family = AF_INET;
+    their_addr.sin_port = htons(8000);
+    their_addr.sin_addr.s_addr=inet_addr("192.168.101.50");
+    bzero(&(their_addr.sin_zero), 8);
+    
+    while(connect(sockfd,(struct sockaddr*)&their_addr,sizeof(struct sockaddr)) == -1);
+    printf("Get the Server~Cheers!\n");
+    numbytes = recv(sockfd, buf, BUFSIZ,0);//接收服务器端信息  
+    buf[numbytes]='\0';  
+    printf("%s\n",buf);
+    while(1)
+    {
+        printf("Entersome thing:");
+        scanf("%s",buf);
+        numbytes = send(sockfd, buf, strlen(buf), 0);
+        numbytes=recv(sockfd,buf,BUFSIZ,0);  
+        buf[numbytes]='\0'; 
+        printf("received:%s\n",buf);  
+    }
+    close(sockfd);
+    return 0;
+}
+```
+
+server.c
+
+```
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <stdio.h>
+#include <errno.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+int main(int argc, char *argv[])
+{
+    int fd, new_fd, struct_len, numbytes,i;
+    struct sockaddr_in server_addr;
+    struct sockaddr_in client_addr;
+    char buff[BUFSIZ];
+
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(8000);
+    server_addr.sin_addr.s_addr = INADDR_ANY;
+    bzero(&(server_addr.sin_zero), 8);
+    struct_len = sizeof(struct sockaddr_in);
+
+    fd = socket(AF_INET, SOCK_STREAM, 0);
+    while(bind(fd, (struct sockaddr *)&server_addr, struct_len) == -1);
+    while(listen(fd, 10) == -1);
+	new_fd = accept(fd, (struct sockaddr *)&client_addr, &struct_len);
+    printf("Get the Client.\n");
+    while((numbytes = recv(new_fd, buff, BUFSIZ, 0)) > 0)
+    {
+		int scull_num=buff[numbytes-1];
+        buff[numbytes-1] = '\0';
+        printf("Msg from scull%d:%s\n",scull_num,buff);
+            if(send(new_fd,buff,numbytes,0)<0)
+            {
+                perror("write");
+                return 1;
+            }
+    }
+    close(new_fd);
+    close(fd);
+    return 0;
+}
+```
+
+main.c
+
+```
+#include<stdio.h>
+#include<fcntl.h>
+#include<stdlib.h>
+#include <errno.h>
+#include <string.h>
+#include <netdb.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+
+int main(int argc,char *argv[])
+{
+	int sockfd,numbytes;
+	char buf[BUFSIZ];
+	struct sockaddr_in their_addr;
+	int fd0,fd1, retval;
+	char W_buffer0[26],W_buffer1[26];
+	int temp0=10,temp1=90;
+	for(int i=0;i<13;i++){
+		W_buffer0[2*i]=temp0/10+'0';
+		W_buffer0[2*i+1]=temp0%10+'0';
+		W_buffer1[2*i]=temp1/10+'0';
+		W_buffer1[2*i+1]=temp1%10+'0';
+		temp0+=2;
+		temp1-=3;
+	}
+	char R_buffer0[26]="",R_buffer1[26]="";
+	fd0=open("/mnt/ext3fs/scull0", O_RDWR);
+	fd1=open("/mnt/ext3fs/scull1", O_RDWR);
+	while((sockfd = socket(AF_INET,SOCK_STREAM,0)) == -1);
+	their_addr.sin_family = AF_INET;
+	their_addr.sin_port = htons(8000);
+	their_addr.sin_addr.s_addr=inet_addr("192.168.101.53");
+	bzero(&(their_addr.sin_zero), 8);
+    
+	while(connect(sockfd,(struct sockaddr*)&their_addr,sizeof(struct sockaddr)) == -1);
+	printf("Get the Server\n");
+
+	//retval = write(fd0, W_buffer0, 26);
+	//printf("scull0 write \"%s\" \n", W_buffer0);
+	//retval = write(fd1, W_buffer1, 26);
+	//printf("scull1 write \"%s\" \n", W_buffer1);
+	
+	lseek(fd0, 0, 0);
+	lseek(fd1, 26, 0);
+
+	for(int i=0;i<13;i++)
+	{
+		//retval = lseek(fd0, 0, 1);
+		//printf("%d\n",retval);
+		retval = read(fd0, R_buffer0, 2);
+		printf("read %d words from scull0\n", retval);
+
+		//retval = lseek(fd1, 0, 1);
+		//if(retval==-1) break;
+		retval = read(fd1, R_buffer1, 2);
+		printf("read %d words from scull1\n", retval);
+		R_buffer1[2]='\0';
+
+        	printf("Send to Server:");
+        	printf("scull0:%s,scull1:%s\n",R_buffer0,R_buffer1);
+		
+		R_buffer1[2]=1;
+        	numbytes = send(sockfd, R_buffer0, strlen(R_buffer0)+1, 0);
+        	numbytes=recv(sockfd,buf,BUFSIZ,0);  
+        	buf[numbytes]='\0'; 
+        	printf("received:%s\n",buf);
+
+		numbytes = send(sockfd, R_buffer1, strlen(R_buffer1), 0);
+        	numbytes=recv(sockfd,buf,BUFSIZ,0);  
+        	buf[numbytes]='\0'; 
+        	printf("received:%s\n",buf); 
+		
+		R_buffer1[2]=0;
+	}
+	close(sockfd);
+	close(fd0);
+	close(fd1);
+	return 0;
 }
 ```
