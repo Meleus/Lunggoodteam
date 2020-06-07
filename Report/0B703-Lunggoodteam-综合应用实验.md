@@ -19,14 +19,14 @@
 编写scull.c、scull.h、Makefile及build文件如文末所示，实现了open, release, read, write, llseek, ioctl这些功能。
 
 ### 2、创建完成之后，编译代码 
-执行make指令，效果如下：  
+执行make指令，效果如下： 
 ![1](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW6/%20(1).png) 
 
 ### 3、再将该设备安装到内核源码树外
 执行insmod scull.ko指令： 
-![2](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW6/%20(2).png)
+![2](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW6/%20(2).png) 
 再执行cat /proc/devices： 
-![3](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW6/%20(3).png)
+![3](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW6/%20(3).png) 
 可以看到scull驱动程序被正确的插入到内核当中，主设备号为240
 
 ### 4、测试驱动程序 
@@ -79,7 +79,7 @@
 编写main.c文件如文末所示。主要实现的功能为：从两个scull设备中分别读取数据，做好设备的序号的标记后，再通过socket通信发送到虚拟机上，虚拟机显示收到的数据，并返回给树莓派，树莓派再显示收到的消息。不断执行，直到数据被读取完。 
 最终虚拟机端显示的效果为：  
 ![21](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW6/%20(21).png)  
-树莓派端显示的效果为： 
+树莓派端显示的效果为：  
 ![22](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW6/%20(22).png)  
 
 ## D、用gdb-gdbserver交叉调试APP：
@@ -100,7 +100,9 @@
 
 ### 6、可以看到，树莓派端也有对应的输出： 
 ![28](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW6/(28).png)  
-一直运行到最后，程序运行结束，host端提示运行完毕，target端也输出了全部的内容。
+
+### 7、一直运行到最后，程序运行结束，host端提示运行完毕，target端也输出了全部的内容。 
+![29](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW6/(29).png)  
 
 ***
 # 四、实验总结
