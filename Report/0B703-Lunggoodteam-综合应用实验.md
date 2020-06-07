@@ -19,14 +19,14 @@
 编写scull.c、scull.h、Makefile及build文件如文末所示，实现了open, release, read, write, llseek, ioctl这些功能。
 
 ### 2、创建完成之后，编译代码 
-执行make指令，效果如下： 
+执行make指令，效果如下：  
 ![1](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW6/%20(1).png) 
 
 ### 3、再将该设备安装到内核源码树外
-执行insmod scull.ko指令： 
-![2](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW6/%20(2).png) 
-再执行cat /proc/devices： 
-![3](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW6/%20(3).png) 
+执行insmod scull.ko指令：  
+![2](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW6/%20(2).png)   
+再执行cat /proc/devices：  
+![3](https://github.com/Meleus/Lunggoodteam/raw/master/screencut/HW6/%20(3).png)   
 可以看到scull驱动程序被正确的插入到内核当中，主设备号为240
 
 ### 4、测试驱动程序 
